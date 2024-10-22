@@ -11,6 +11,8 @@ export class Name {
         this.components = other;
         this.delimiter = delimiter?.valueOf() ?? this.DEFAULT_DELIMITER;
     }
+
+    /** Returns human-readable representation of Name instance */
     // @methodtype conversion method
     public asNameString(delimiter: string = this.delimiter): string {
         return this.components.join(delimiter);
