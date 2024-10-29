@@ -25,6 +25,8 @@ export class Name {
     public setComponent(i: number, c: string): void {
         this.components[i] = c;
     }
+
+     /** Returns number of components in Name instance */
     // @methodtype getter
     public getNoComponents(): number {
         return this.components.length;
