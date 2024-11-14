@@ -73,7 +73,7 @@ export class StringName implements Name {
     private getComponents():string[]{
         const escapeRegex = (str: string): string => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         let escapedDelimiter = escapeRegex(this.delimiter);
-        return this.name.split(new RegExp(`(?<!${ESCAPE_CHARACTER})${escapedDelimiter}`, 'g')).map(
+        return this.name.split(new RegExp(`(?<!\\${ESCAPE_CHARACTER})${escapedDelimiter}`, 'g')).map(
             component => component.replace(new RegExp(`\\${ESCAPE_CHARACTER}${escapedDelimiter}`, 'g'), this.delimiter));
     }
     public concat(other: Name): void {
