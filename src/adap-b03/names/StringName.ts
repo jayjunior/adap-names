@@ -8,27 +8,41 @@ export class StringName extends AbstractName {
 
     constructor(other: string, delimiter?: string) {
         super();
-        throw new Error("needs implementation");
     }
 
     getNoComponents(): number {
-        throw new Error("needs implementation");
+        return this.getComponents().length;
     }
 
     getComponent(i: number): string {
-        throw new Error("needs implementation");
+        return this.getComponents()[i];
     }
     setComponent(i: number, c: string) {
-        throw new Error("needs implementation");
+        let components = this.getComponents();
+        components[i] = c
+        components.forEach(element => {
+            element.replace(this.delimiter,`${ESCAPE_CHARACTER}${this.delimiter}`)
+        });
+        this.name = components.join(this.delimiter);
     }
 
     insert(i: number, c: string) {
-        throw new Error("needs implementation");
+        let components = this.getComponents();
+        components.splice(i,0,c);
+        this.name = components.join(this.delimiter);
     }
     append(c: string) {
-        throw new Error("needs implementation");
+        this.name = `${this.name}${this.delimiter}${c}`;
     }
     remove(i: number) {
-        throw new Error("needs implementation");
+        let components = this.getComponents();
+        components.splice(i,1);
+        this.name = components.join(this.delimiter);
+    }
+    private getComponents():string[]{
+        const escapeRegex = (str: string): string => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        let escapedDelimiter = escapeRegex(this.delimiter);
+        return this.name.split(new RegExp(`(?<!${ESCAPE_CHARACTER})${escapedDelimiter}`, 'g')).map(
+            component => component.replace(new RegExp(`\\${ESCAPE_CHARACTER}${escapedDelimiter}`, 'g'), this.delimiter));
     }
 }

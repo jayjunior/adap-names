@@ -7,27 +7,28 @@ export class StringArrayName extends AbstractName {
 
     constructor(other: string[], delimiter?: string) {
         super();
-        throw new Error("needs implementation");
     }
 
     getNoComponents(): number {
-        throw new Error("needs implementation");
+        return this.components.length;
     }
 
     getComponent(i: number): string {
-        throw new Error("needs implementation");
+        return this.components[i];
     }
     setComponent(i: number, c: string) {
-        throw new Error("needs implementation");
+        this.components[i] = c;
     }
 
-    insert(i: number, c: string) {
-        throw new Error("needs implementation");
+    public insert(i: number, c: string): void {
+        this.components.splice(i,0,c);
     }
-    append(c: string) {
-        throw new Error("needs implementation");
+
+    public append(c: string): void {
+        this.components.push(c);
     }
-    remove(i: number) {
-        throw new Error("needs implementation");
+
+    public remove(i: number): void {
+        this.components.splice(i,1);
     }
 }
