@@ -20,53 +20,94 @@ export class Name {
 
     /** Expects that all Name components are properly masked */
     constructor(other: string[], delimiter?: string) {
-        throw new Error("needs implementation or deletion");
+        this.components = [...other];
+        if (delimiter !== undefined) {
+            this.delimiter = delimiter;
+        }
     }
 
+    // @methodtype conversion-method
     /**
      * Returns a human-readable representation of the Name instance using user-set control characters
      * Control characters are not escaped (creating a human-readable string)
      * Users can vary the delimiter character to be used
      */
     public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
+        return this.components.map(c => this.unmask(c)).join(delimiter);
     }
 
+    // @methodtype conversion-method
     /** 
      * Returns a machine-readable representation of Name instance using default control characters
      * Machine-readable means that from a data string, a Name can be parsed back in
      * The control characters in the data string are the default characters
      */
     public asDataString(): string {
-        throw new Error("needs implementation or deletion");
+        return this.components.join(DEFAULT_DELIMITER);
     }
-
+    // @methodtype get-method
     public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+        return this.components[i];
     }
 
+    // @methodtype set-method
     /** Expects that new Name component c is properly masked */
     public setComponent(i: number, c: string): void {
-        throw new Error("needs implementation or deletion");
+        this.components[i] = c;
     }
 
+    // @methodtype get-method
      /** Returns number of components in Name instance */
      public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        return this.components.length;
     }
 
+    // @methodtype command-method
     /** Expects that new Name component c is properly masked */
     public insert(i: number, c: string): void {
-        throw new Error("needs implementation or deletion");
+        this.components.splice(i, 0, c);
     }
 
+    // @methodtype command-method
     /** Expects that new Name component c is properly masked */
     public append(c: string): void {
-        throw new Error("needs implementation or deletion");
+        this.components.push(c);
     }
 
+    // @methodtype command-method
     public remove(i: number): void {
-        throw new Error("needs implementation or deletion");
+        this.components.splice(i, 1);
+    }
+
+    // @methodtype helper-method
+    /**
+     * Helper method to unmask a component string
+     * Removes escape characters before special characters
+     */
+    private unmask(component: string): string {
+        let result = '';
+        let i = 0;
+        if(component.endsWith(".cs")){
+            console.log(component)
+        }
+        while (i < component.length) {
+            if (component[i] === ESCAPE_CHARACTER && i + 1 < component.length) {
+                // Check if next character is a special character
+                const nextChar = component[i + 1];
+                if (nextChar === this.delimiter) {
+                    result += nextChar;
+                    i += 2;
+                    continue;
+                }
+            }
+            result += component[i];
+            i++;
+        } 
+        if(component.endsWith(".cs")){
+            console.log(component)
+            console.log(result)
+        }
+        return result;
     }
 
 }
