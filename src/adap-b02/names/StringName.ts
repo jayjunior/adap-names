@@ -6,53 +6,94 @@ export class StringName implements Name {
     protected delimiter: string = DEFAULT_DELIMITER;
     protected name: string = "";
     protected noComponents: number = 0;
+    protected components: string[] = [];
 
     constructor(source: string, delimiter?: string) {
-        throw new Error("needs implementation or deletion");
+        this.name = source;
+        this.delimiter = delimiter ?? DEFAULT_DELIMITER;
+        this.components = this.parseComponents(this.name);
     }
 
     public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
+        return this.components.join(delimiter);
     }
 
     public asDataString(): string {
-        throw new Error("needs implementation or deletion");
+        return this.components.join(DEFAULT_DELIMITER);
     }
 
     public getDelimiterCharacter(): string {
-        throw new Error("needs implementation or deletion");
+        return this.delimiter;
     }
 
     public isEmpty(): boolean {
-        throw new Error("needs implementation or deletion");
+        return this.getNoComponents() === 0;
     }
 
     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        return this.components.length;
     }
 
     public getComponent(x: number): string {
-        throw new Error("needs implementation or deletion");
+        return this.components[x];
     }
 
     public setComponent(n: number, c: string): void {
-        throw new Error("needs implementation or deletion");
+        this.components.splice(n, 0, c);
+        this.name = this.components.join(this.delimiter);
     }
 
     public insert(n: number, c: string): void {
-        throw new Error("needs implementation or deletion");
+        this.components.splice(n, 0, c);
+        this.name = this.components.join(this.delimiter);
     }
 
     public append(c: string): void {
-        throw new Error("needs implementation or deletion");
+        this.components.push(c);
+        this.name = this.components.join(this.delimiter);
     }
 
     public remove(n: number): void {
-        throw new Error("needs implementation or deletion");
+        this.components.splice(n, 1);
+        this.name = this.components.join(this.delimiter)
     }
 
     public concat(other: Name): void {
-        throw new Error("needs implementation or deletion");
+        for(let i = 0 ; i < other.getNoComponents() ; i++){
+            this.append(other.getComponent(i));
+        }
+    }
+
+
+    // @methodtype helper-method
+    /**
+     * Helper method to parse components from a string
+     * Handles escape characters before delimiters
+     */
+    private parseComponents(source: string): string[] {
+        let result: string[] = [];
+        let i = 0;
+        let currentComponent : string = "";
+        while (i < source.length) {
+            if (source[i] === ESCAPE_CHARACTER && i + 1 < source.length) {
+                const nextChar = source[i + 1];
+                if (nextChar === this.delimiter) {
+                    currentComponent += nextChar;
+                    i += 2;
+                    continue;
+                }
+            }
+            if(source[i] === this.delimiter){
+                result.push(currentComponent);
+                currentComponent = "";
+            }else{
+                currentComponent+=source[i];
+            }
+            i++;
+        }
+        // Don't forget to add the last component!
+        result.push(currentComponent);
+        return result;
     }
 
 }

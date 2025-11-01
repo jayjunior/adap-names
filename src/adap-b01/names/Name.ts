@@ -87,9 +87,6 @@ export class Name {
     private unmask(component: string): string {
         let result = '';
         let i = 0;
-        if(component.endsWith(".cs")){
-            console.log(component)
-        }
         while (i < component.length) {
             if (component[i] === ESCAPE_CHARACTER && i + 1 < component.length) {
                 // Check if next character is a special character
@@ -103,10 +100,6 @@ export class Name {
             result += component[i];
             i++;
         } 
-        if(component.endsWith(".cs")){
-            console.log(component)
-            console.log(result)
-        }
         return result;
     }
 

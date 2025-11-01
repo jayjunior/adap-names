@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 
-import { Name } from "../../../src/adap-b02/names/Name";
-import { StringName } from "../../../src/adap-b02/names/StringName";
-import { StringArrayName } from "../../../src/adap-b02/names/StringArrayName";
+import { Name } from "../../../src/adap-b03/names/Name";
+import { StringName } from "../../../src/adap-b03/names/StringName";
+import { StringArrayName } from "../../../src/adap-b03/names/StringArrayName";
 
 describe("Basic StringName function tests", () => {
   it("test insert", () => {
@@ -10,11 +10,13 @@ describe("Basic StringName function tests", () => {
     n.insert(1, "cs");
     expect(n.asString()).toBe("oss.cs.fau.de");
   });
+  
   it("test append", () => {
     let n: Name = new StringName("oss.cs.fau");
     n.append("de");
     expect(n.asString()).toBe("oss.cs.fau.de");
   });
+  
   it("test remove", () => {
     let n: Name = new StringName("oss.cs.fau.de");
     n.remove(0);
@@ -28,11 +30,13 @@ describe("Basic StringArrayName function tests", () => {
     n.insert(1, "cs");
     expect(n.asString()).toBe("oss.cs.fau.de");
   });
+  
   it("test append", () => {
     let n: Name = new StringArrayName(["oss", "cs", "fau"]);
     n.append("de");
     expect(n.asString()).toBe("oss.cs.fau.de");
   });
+  
   it("test remove", () => {
     let n: Name = new StringArrayName(["oss", "cs", "fau", "de"]);
     n.remove(0);
@@ -55,6 +59,100 @@ describe("Escape character extravaganza", () => {
     expect(n.asString()).toBe("oss.cs.fau.de");
     n.append("people");
     expect(n.asString()).toBe("oss.cs.fau.de#people");
+  });
+});
+
+describe("Clone functionality tests", () => {
+  it("test StringName clone creates independent copy", () => {
+    let n1: Name = new StringName("oss.cs.fau.de");
+    let n2: Name = n1.clone();
+    expect(n2.asString()).toBe("oss.cs.fau.de");
+    n2.append("people");
+    expect(n1.asString()).toBe("oss.cs.fau.de");
+    expect(n2.asString()).toBe("oss.cs.fau.de.people");
+  });
+
+  it("test StringArrayName clone creates independent copy", () => {
+    let n1: Name = new StringArrayName(["oss", "cs", "fau", "de"]);
+    let n2: Name = n1.clone();
+    expect(n2.asString()).toBe("oss.cs.fau.de");
+    n2.append("people");
+    expect(n1.asString()).toBe("oss.cs.fau.de");
+    expect(n2.asString()).toBe("oss.cs.fau.de.people");
+  });
+
+  it("test clone preserves delimiter", () => {
+    let n1: Name = new StringName("oss#cs#fau#de", "#");
+    let n2: Name = n1.clone();
+    expect(n2.getDelimiterCharacter()).toBe("#");
+    expect(n2.asString()).toBe("oss#cs#fau#de");
+  });
+});
+
+describe("Equality tests", () => {
+  it("test isEqual for identical StringNames", () => {
+    let n1: Name = new StringName("oss.cs.fau.de");
+    let n2: Name = new StringName("oss.cs.fau.de");
+    expect(n1.isEqual(n2)).toBe(true);
+  });
+
+  it("test isEqual for different StringNames", () => {
+    let n1: Name = new StringName("oss.cs.fau.de");
+    let n2: Name = new StringName("oss.cs.fau");
+    expect(n1.isEqual(n2)).toBe(false);
+  });
+
+  it("test isEqual for identical StringArrayNames", () => {
+    let n1: Name = new StringArrayName(["oss", "cs", "fau", "de"]);
+    let n2: Name = new StringArrayName(["oss", "cs", "fau", "de"]);
+    expect(n1.isEqual(n2)).toBe(true);
+  });
+
+  it("test isEqual for different StringArrayNames", () => {
+    let n1: Name = new StringArrayName(["oss", "cs", "fau", "de"]);
+    let n2: Name = new StringArrayName(["oss", "cs", "fau"]);
+    expect(n1.isEqual(n2)).toBe(false);
+  });
+
+  it("test isEqual between StringName and StringArrayName", () => {
+    let n1: Name = new StringName("oss.cs.fau.de");
+    let n2: Name = new StringArrayName(["oss", "cs", "fau", "de"]);
+    expect(n1.isEqual(n2)).toBe(true);
+  });
+
+  it("test isEqual after modifications", () => {
+    let n1: Name = new StringName("oss.fau.de");
+    let n2: Name = new StringName("oss.fau.de");
+    n1.insert(1, "cs");
+    n2.insert(1, "cs");
+    expect(n1.isEqual(n2)).toBe(true);
+  });
+});
+
+describe("HashCode tests", () => {
+  it("test getHashCode for identical names returns same hash", () => {
+    let n1: Name = new StringName("oss.cs.fau.de");
+    let n2: Name = new StringName("oss.cs.fau.de");
+    expect(n1.getHashCode()).toBe(n2.getHashCode());
+  });
+
+  it("test getHashCode for different names returns different hash", () => {
+    let n1: Name = new StringName("oss.cs.fau.de");
+    let n2: Name = new StringName("oss.cs.fau");
+    expect(n1.getHashCode()).not.toBe(n2.getHashCode());
+  });
+
+  it("test getHashCode consistency", () => {
+    let n: Name = new StringName("oss.cs.fau.de");
+    let hash1 = n.getHashCode();
+    let hash2 = n.getHashCode();
+    expect(hash1).toBe(hash2);
+  });
+
+  it("test getHashCode between StringName and StringArrayName", () => {
+    let n1: Name = new StringName("oss.cs.fau.de");
+    let n2: Name = new StringArrayName(["oss", "cs", "fau", "de"]);
+    expect(n1.getHashCode()).toBe(n2.getHashCode());
   });
 });
 
@@ -81,7 +179,7 @@ describe("StringName - Edge Cases and Additional Methods", () => {
   it("test setComponent", () => {
     let n: Name = new StringName("oss.cs.fau.de");
     n.setComponent(1, "newcs");
-    expect(n.asString()).toBe("oss.newcs.cs.fau.de");
+    expect(n.asString()).toBe("oss.newcs.fau.de");
   });
 
   it("test concat with another name", () => {
@@ -147,6 +245,11 @@ describe("StringName - Edge Cases and Additional Methods", () => {
     n.insert(0, "start");
     n.remove(2);
     expect(n.asString()).toBe("start.a.c");
+  });
+
+  it("test toString method", () => {
+    let n: Name = new StringName("oss.cs.fau.de");
+    expect(n.toString()).toBe("oss.cs.fau.de");
   });
 });
 
@@ -238,6 +341,11 @@ describe("StringArrayName - Edge Cases and Additional Methods", () => {
     expect(n.getNoComponents()).toBe(1);
     expect(n.asString()).toBe("single");
   });
+
+  it("test toString method", () => {
+    let n: Name = new StringArrayName(["oss", "cs", "fau", "de"]);
+    expect(n.toString()).toBe("oss.cs.fau.de");
+  });
 });
 
 describe("Cross-implementation Compatibility", () => {
@@ -263,6 +371,13 @@ describe("Cross-implementation Compatibility", () => {
     for (let i = 0; i < n1.getNoComponents(); i++) {
       expect(n1.getComponent(i)).toBe(n2.getComponent(i));
     }
+  });
+
+  it("test clones are equal to original", () => {
+    let n1: Name = new StringName("oss.cs.fau.de");
+    let n2: Name = n1.clone();
+    expect(n1.isEqual(n2)).toBe(true);
+    expect(n1.getHashCode()).toBe(n2.getHashCode());
   });
 });
 
@@ -314,5 +429,72 @@ describe("Complex Escape Scenarios", () => {
     expect(n.getComponent(1)).toBe("x");
     expect(n.getComponent(2)).toBe("b");
     expect(n.getComponent(3)).toBe("c");
+  });
+});
+
+describe("AbstractName shared behavior tests", () => {
+  it("test concat works for both implementations", () => {
+    let n1: Name = new StringName("a.b");
+    let n2: Name = new StringArrayName(["c", "d"]);
+    n1.concat(n2);
+    expect(n1.asString()).toBe("a.b.c.d");
+  });
+
+  it("test isEmpty inherited behavior", () => {
+    let n1: Name = new StringName("a");
+    let n2: Name = new StringArrayName(["a"]);
+    expect(n1.isEmpty()).toBe(false);
+    expect(n2.isEmpty()).toBe(false);
+  });
+
+  it("test asDataString uses default delimiter", () => {
+    let n1: Name = new StringName("a#b#c", "#");
+    let n2: Name = new StringArrayName(["a", "b", "c"], "#");
+    expect(n1.asDataString()).toBe("a.b.c");
+    expect(n2.asDataString()).toBe("a.b.c");
+  });
+
+  it("test isEqual works symmetrically", () => {
+    let n1: Name = new StringName("a.b.c");
+    let n2: Name = new StringArrayName(["a", "b", "c"]);
+    expect(n1.isEqual(n2)).toBe(true);
+    expect(n2.isEqual(n1)).toBe(true);
+  });
+});
+
+describe("Edge cases and boundary conditions", () => {
+  it("test single character components", () => {
+    let n: Name = new StringName("a.b.c");
+    expect(n.getNoComponents()).toBe(3);
+    expect(n.getComponent(0)).toBe("a");
+  });
+
+  it("test empty components", () => {
+    let n: Name = new StringName("a..b");
+    expect(n.getNoComponents()).toBe(3);
+    expect(n.getComponent(1)).toBe("");
+  });
+
+  it("test remove all but one component", () => {
+    let n: Name = new StringName("a.b.c");
+    n.remove(2);
+    n.remove(1);
+    expect(n.getNoComponents()).toBe(1);
+    expect(n.asString()).toBe("a");
+  });
+
+  it("test multiple appends", () => {
+    let n: Name = new StringArrayName([]);
+    n.append("a");
+    n.append("b");
+    n.append("c");
+    expect(n.asString()).toBe("a.b.c");
+  });
+
+  it("test setComponent at different positions", () => {
+    let n: Name = new StringName("a.b.c.d");
+    n.setComponent(0, "x");
+    n.setComponent(3, "y");
+    expect(n.asString()).toBe("x.b.c.y");
   });
 });
