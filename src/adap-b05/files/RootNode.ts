@@ -1,6 +1,9 @@
 import { Name } from "../names/Name";
 import { StringName } from "../names/StringName";
 import { Directory } from "./Directory";
+import { ServiceFailureException } from "../common/ServiceFailureException";
+import { Exception } from "../common/Exception";
+import { Node } from "./Node";
 
 export class RootNode extends Directory {
 
@@ -28,6 +31,21 @@ export class RootNode extends Directory {
 
     protected doSetBaseName(bn: string): void {
         // null operation
+    }
+
+    protected assertClassInvariants(): void {
+        // RootNode is allowed to have empty basename
+    }
+
+    public findNodes(bn: string): Set<Node> {
+        try {
+            return super.findNodes(bn);
+        } catch (ex) {
+            if (ex instanceof Exception) {
+                throw new ServiceFailureException("file system service failed", ex);
+            }
+            throw ex;
+        }
     }
 
 }

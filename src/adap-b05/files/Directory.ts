@@ -20,4 +20,14 @@ export class Directory extends Node {
         this.childNodes.delete(cn); // Yikes! Should have been called remove
     }
 
+    public findNodes(bn: string): Set<Node> {
+        this.assertClassInvariants();
+        const result: Set<Node> = super.findNodes(bn);
+        for (let child of this.childNodes) {
+            const childResult: Set<Node> = child.findNodes(bn);
+            childResult.forEach(n => result.add(n));
+        }
+        return result;
+    }
+
 }
